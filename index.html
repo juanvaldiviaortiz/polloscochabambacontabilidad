@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentación Técnica - API Pollos Cochabamba</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; color: #333; }
+        h1, h2, h3 { color: #222; }
+        code { background-color: #eee; padding: 2px 4px; border-radius: 4px; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        .section { margin-bottom: 40px; }
+    </style>
+</head>
+<body>
+    <h1>Documentación Técnica de la API - Pollos Cochabamba</h1>
+
+    <div class="section">
+        <h2>1. Introducción</h2>
+        <p><strong>Nombre de la API:</strong> Pollos Cochabamba API</p>
+        <p><strong>Objetivo:</strong> Gestionar empleados, capital, marketing y movimientos financieros de la empresa.</p>
+        <p><strong>Descripción:</strong> Sistema desarrollado en Flask con base de datos MariaDB, que permite administrar recursos humanos y financieros.</p>
+        <p><strong>Funcionalidades principales:</strong></p>
+        <ul>
+            <li>Registro e inicio de sesión de usuarios.</li>
+            <li>Gestión de empleados.</li>
+            <li>Gestión de capital y marketing.</li>
+            <li>Control de movimientos financieros.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>2. Acceso y autenticación</h2>
+        <p><strong>Método:</strong> API Key</p>
+        <p>La API requiere enviar la API Key en el header <code>x-api-key</code> de cada solicitud.</p>
+        <p><strong>Ejemplo de solicitud autenticada:</strong></p>
+        <pre>
+GET http://127.0.0.1:5000/empleados
+Headers:
+x-api-key: mi_api_key_segura
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>3. Rutas o Endpoints</h2>
+        <h3>/login</h3>
+        <ul>
+            <li><strong>Método:</strong> POST</li>
+            <li><strong>Descripción:</strong> Inicia sesión con email y contraseña.</li>
+            <li><strong>Body:</strong> { "email": "user@mail.com", "password": "1234" }</li>
+            <li><strong>Respuesta:</strong> { "message": "Login exitoso" }</li>
+        </ul>
+
+        <h3>/registro</h3>
+        <ul>
+            <li><strong>Método:</strong> POST</li>
+            <li><strong>Descripción:</strong> Registra un nuevo usuario.</li>
+            <li><strong>Body:</strong> { "nombre": "Juan", "email": "juan@mail.com", "password": "1234", "rol": "admin" }</li>
+            <li><strong>Respuesta:</strong> { "message": "Usuario registrado correctamente" }</li>
+        </ul>
+
+        <h3>/empleados</h3>
+        <ul>
+            <li><strong>Método:</strong> GET / POST</li>
+            <li><strong>Descripción:</strong> Listar o registrar empleados.</li>
+            <li><strong>Headers:</strong> x-api-key</li>
+            <li><strong>Respuesta GET:</strong> [ { "id": 1, "nombre": "Pedro" } ]</li>
+        </ul>
+
+        <h3>/capital</h3>
+        <ul>
+            <li><strong>Método:</strong> GET / POST</li>
+            <li><strong>Descripción:</strong> Consultar y ajustar capital.</li>
+            <li><strong>Headers:</strong> x-api-key</li>
+            <li><strong>Respuesta GET:</strong> { "total_general": 100000, "fondo_nomina": 10000 }</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>4. Formato de datos</h2>
+        <p>La API utiliza <strong>JSON</strong> para enviar y recibir información.</p>
+        <ul>
+            <li><strong>Headers:</strong> x-api-key</li>
+            <li><strong>Body:</strong> JSON</li>
+            <li><strong>Respuesta:</strong> JSON</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>5. Dirección y acceso a los datos</h2>
+        <p><strong>Flujo:</strong> Cliente → API Flask → MariaDB → Respuesta JSON</p>
+        <p>El cliente envía datos en JSON, la API los procesa y consulta/actualiza la base de datos, devolviendo una respuesta en JSON.</p>
+    </div>
+
+    <div class="section">
+        <h2>6. Diccionario de datos</h2>
+        <table>
+            <tr><th>Campo</th><th>Tipo</th><th>Obligatorio</th><th>Descripción</th><th>Ejemplo</th></tr>
+            <tr><td>id</td><td>Integer</td><td>Sí</td><td>Identificador del registro</td><td>25</td></tr>
+            <tr><td>nombre</td><td>String</td><td>Sí</td><td>Nombre del empleado</td><td>"Juan"</td></tr>
+            <tr><td>rol</td><td>String</td><td>Sí</td><td>Rol del usuario</td><td>"admin"</td></tr>
+            <tr><td>monto</td><td>Float</td><td>No</td><td>Salario o ajuste</td><td>1500.50</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>7. Ejemplos de consumo</h2>
+        <h3>Postman</h3>
+        <pre>
+GET http://127.0.0.1:5000/empleados
+Headers:
+x-api-key: mi_api_key_segura
+        </pre>
+
+        <h3>cURL</h3>
+        <pre>
+curl -X GET http://127.0.0.1:5000/empleados \
+-H "x-api-key: mi_api_key_segura"
+        </pre>
+
+        <h3>Python (requests)</h3>
+        <pre>
+import requests
+
+headers = {"x-api-key": "mi_api_key_segura"}
+r = requests.get("http://127.0.0.1:5000/empleados", headers=headers)
+print(r.json())
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>8. Manejo de errores</h2>
+        <p>La API devuelve errores en formato JSON:</p>
+        <pre>
+{
+  "statusCode": 401,
+  "message": "API Key inválida"
+}
+        </pre>
+        <ul>
+            <li><strong>401:</strong> Autenticación fallida.</li>
+            <li><strong>404:</strong> Recurso no encontrado.</li>
+            <li><strong>500:</strong> Error interno del servidor.</li>
+        </ul>
+    </div>
+</body>
+</html>
