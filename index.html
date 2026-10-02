@@ -2,147 +2,531 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Documentación Técnica - API Pollos Cochabamba</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación Técnica API - Pollos Cochabamba</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; color: #333; }
-        h1, h2, h3 { color: #222; }
-        code { background-color: #eee; padding: 2px 4px; border-radius: 4px; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #f0f0f0; }
-        .section { margin-bottom: 40px; }
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #182234;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --border: #334155;
+            --code-bg: #090d16;
+            --tag-post: #10b981;
+            --tag-get: #3b82f6;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Sidebar Navigation */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Main Content */
+        main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: 1100px;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        section {
+            margin-bottom: 3.5rem;
+            scroll-margin-top: 2rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            margin: 1.5rem 0 0.75rem 0;
+            color: var(--accent);
+        }
+
+        p, li {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        ul {
+            padding-left: 1.25rem;
+        }
+
+        /* Cards & Info Boxes */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            border-radius: 8px;
+        }
+
+        .card h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Badges HTTP Methods */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Fira Code', monospace;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+        }
+
+        .badge-post { background-color: rgba(16, 185, 129, 0.15); color: var(--tag-post); border: 1px solid var(--tag-post); }
+        .badge-get { background-color: rgba(59, 130, 246, 0.15); color: var(--tag-get); border: 1px solid var(--tag-get); }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Code Blocks */
+        code {
+            font-family: 'Fira Code', monospace;
+            background-color: var(--bg-secondary);
+            color: var(--accent);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            color: var(--text-main);
+            padding: 0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* Flow Process */
+        .flow-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background-color: var(--bg-card);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        .flow-step {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .flow-arrow {
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            aside { width: 100%; height: auto; position: relative; }
+            main { margin-left: 0; padding: 1.5rem; }
+        }
     </style>
 </head>
 <body>
-    <h1>Documentación Técnica de la API - Pollos Cochabamba</h1>
 
-    <div class="section">
-        <h2>1. Introducción</h2>
-        <p><strong>Nombre de la API:</strong> Pollos Cochabamba API</p>
-        <p><strong>Objetivo:</strong> Gestionar empleados, capital, marketing y movimientos financieros de la empresa.</p>
-        <p><strong>Descripción:</strong> Sistema desarrollado en Flask con base de datos MariaDB, que permite administrar recursos humanos y financieros.</p>
-        <p><strong>Funcionalidades principales:</strong></p>
-        <ul>
-            <li>Registro e inicio de sesión de usuarios.</li>
-            <li>Gestión de empleados.</li>
-            <li>Gestión de capital y marketing.</li>
-            <li>Control de movimientos financieros.</li>
-        </ul>
-    </div>
+    <!-- Navegación Lateral -->
+    <aside>
+        <div class="brand">
+            <span>🍗</span> Pollos Cochabamba
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#introduccion">1. Introducción</a></li>
+                <li><a href="#autenticacion">2. Acceso y Autenticación</a></li>
+                <li><a href="#endpoints">3. Endpoints</a></li>
+                <li><a href="#formato">4. Formato de Datos</a></li>
+                <li><a href="#flujo">5. Flujo de Datos</a></li>
+                <li><a href="#diccionario">6. Diccionario de Datos</a></li>
+                <li><a href="#ejemplos">7. Ejemplos de Consumo</a></li>
+                <li><a href="#errores">8. Manejo de Errores</a></li>
+            </ul>
+        </nav>
+    </aside>
 
-    <div class="section">
-        <h2>2. Acceso y autenticación</h2>
-        <p><strong>Método:</strong> API Key</p>
-        <p>La API requiere enviar la API Key en el header <code>x-api-key</code> de cada solicitud.</p>
-        <p><strong>Ejemplo de solicitud autenticada:</strong></p>
-        <pre>
-GET http://127.0.0.1:5000/empleados
-Headers:
-x-api-key: mi_api_key_segura
-        </pre>
-    </div>
+    <!-- Contenido Principal -->
+    <main>
+        <header>
+            <h1>Documentación Técnica de la API</h1>
+            <p class="subtitle">Especificaciones para la integración con el ecosistema de Pollos Cochabamba</p>
+        </header>
 
-    <div class="section">
-        <h2>3. Rutas o Endpoints</h2>
-        <h3>/login</h3>
-        <ul>
-            <li><strong>Método:</strong> POST</li>
-            <li><strong>Descripción:</strong> Inicia sesión con email y contraseña.</li>
-            <li><strong>Body:</strong> { "email": "user@mail.com", "password": "1234" }</li>
-            <li><strong>Respuesta:</strong> { "message": "Login exitoso" }</li>
-        </ul>
+        <!-- 1. Introducción -->
+        <section id="introduccion">
+            <h2>1. Introducción</h2>
+            <p>La <strong>Pollos Cochabamba API</strong> es un sistema desarrollado en <code>Flask</code> sobre una base de datos <code>MariaDB</code>, diseñado para gestionar los recursos humanos, de marketing y movimientos financieros de la empresa.</p>
 
-        <h3>/registro</h3>
-        <ul>
-            <li><strong>Método:</strong> POST</li>
-            <li><strong>Descripción:</strong> Registra un nuevo usuario.</li>
-            <li><strong>Body:</strong> { "nombre": "Juan", "email": "juan@mail.com", "password": "1234", "rol": "admin" }</li>
-            <li><strong>Respuesta:</strong> { "message": "Usuario registrado correctamente" }</li>
-        </ul>
+            <div class="info-grid">
+                <div class="card">
+                    <h4>Servidor Backend</h4>
+                    <p>Flask (Python)</p>
+                </div>
+                <div class="card">
+                    <h4>Base de Datos</h4>
+                    <p>MariaDB</p>
+                </div>
+                <div class="card">
+                    <h4>Formato</h4>
+                    <p>JSON REST API</p>
+                </div>
+            </div>
 
-        <h3>/empleados</h3>
-        <ul>
-            <li><strong>Método:</strong> GET / POST</li>
-            <li><strong>Descripción:</strong> Listar o registrar empleados.</li>
-            <li><strong>Headers:</strong> x-api-key</li>
-            <li><strong>Respuesta GET:</strong> [ { "id": 1, "nombre": "Pedro" } ]</li>
-        </ul>
+            <p><strong>Funcionalidades principales:</strong></p>
+            <ul>
+                <li>Registro e inicio de sesión de usuarios.</li>
+                <li>Gestión de empleados.</li>
+                <li>Gestión de capital y presupuestos de marketing.</li>
+                <li>Control y auditoría de movimientos financieros.</li>
+            </ul>
+        </section>
 
-        <h3>/capital</h3>
-        <ul>
-            <li><strong>Método:</strong> GET / POST</li>
-            <li><strong>Descripción:</strong> Consultar y ajustar capital.</li>
-            <li><strong>Headers:</strong> x-api-key</li>
-            <li><strong>Respuesta GET:</strong> { "total_general": 100000, "fondo_nomina": 10000 }</li>
-        </ul>
-    </div>
+        <!-- 2. Acceso y autenticación -->
+        <section id="autenticacion">
+            <h2>2. Acceso y Autenticación</h2>
+            <p>La API implementa seguridad mediante autenticación basada en clave de API (<strong>API Key</strong>). Esta clave debe incluirse en los encabezados HTTP de cada solicitud en el parámetro <code>x-api-key</code>.</p>
 
-    <div class="section">
-        <h2>4. Formato de datos</h2>
-        <p>La API utiliza <strong>JSON</strong> para enviar y recibir información.</p>
-        <ul>
-            <li><strong>Headers:</strong> x-api-key</li>
-            <li><strong>Body:</strong> JSON</li>
-            <li><strong>Respuesta:</strong> JSON</li>
-        </ul>
-    </div>
+            <pre><code>GET /empleados HTTP/1.1
+Host: 127.0.0.1:5000
+x-api-key: mi_api_key_segura</code></pre>
+        </section>
 
-    <div class="section">
-        <h2>5. Dirección y acceso a los datos</h2>
-        <p><strong>Flujo:</strong> Cliente → API Flask → MariaDB → Respuesta JSON</p>
-        <p>El cliente envía datos en JSON, la API los procesa y consulta/actualiza la base de datos, devolviendo una respuesta en JSON.</p>
-    </div>
+        <!-- 3. Rutas o Endpoints -->
+        <section id="endpoints">
+            <h2>3. Rutas o Endpoints</h2>
 
-    <div class="section">
-        <h2>6. Diccionario de datos</h2>
-        <table>
-            <tr><th>Campo</th><th>Tipo</th><th>Obligatorio</th><th>Descripción</th><th>Ejemplo</th></tr>
-            <tr><td>id</td><td>Integer</td><td>Sí</td><td>Identificador del registro</td><td>25</td></tr>
-            <tr><td>nombre</td><td>String</td><td>Sí</td><td>Nombre del empleado</td><td>"Juan"</td></tr>
-            <tr><td>rol</td><td>String</td><td>Sí</td><td>Rol del usuario</td><td>"admin"</td></tr>
-            <tr><td>monto</td><td>Float</td><td>No</td><td>Salario o ajuste</td><td>1500.50</td></tr>
-        </table>
-    </div>
+            <h3><span class="badge badge-post">POST</span> /login</h3>
+            <p>Inicia sesión en la plataforma validando credenciales.</p>
+            <p><strong>Body (JSON):</strong></p>
+            <pre><code>{
+  "email": "user@mail.com",
+  "password": "1234"
+}</code></pre>
+            <p><strong>Respuesta:</strong></p>
+            <pre><code>{
+  "message": "Login exitoso"
+}</code></pre>
 
-    <div class="section">
-        <h2>7. Ejemplos de consumo</h2>
-        <h3>Postman</h3>
-        <pre>
-GET http://127.0.0.1:5000/empleados
-Headers:
-x-api-key: mi_api_key_segura
-        </pre>
+            <h3><span class="badge badge-post">POST</span> /registro</h3>
+            <p>Registra un nuevo usuario en la plataforma con un rol asignado.</p>
+            <p><strong>Body (JSON):</strong></p>
+            <pre><code>{
+  "nombre": "Juan",
+  "email": "juan@mail.com",
+  "password": "1234",
+  "rol": "admin"
+}</code></pre>
 
-        <h3>cURL</h3>
-        <pre>
-curl -X GET http://127.0.0.1:5000/empleados \
--H "x-api-key: mi_api_key_segura"
-        </pre>
+            <h3><span class="badge badge-get">GET</span> <span class="badge badge-post">POST</span> /empleados</h3>
+            <p>Permite listar o registrar la lista de empleados. Requiere encabezado de autenticación.</p>
+            <p><strong>Headers:</strong> <code>x-api-key: mi_api_key_segura</code></p>
+            <p><strong>Respuesta GET (JSON):</strong></p>
+            <pre><code>[
+  {
+    "id": 1,
+    "nombre": "Pedro"
+  }
+]</code></pre>
 
-        <h3>Python (requests)</h3>
-        <pre>
-import requests
+            <h3><span class="badge badge-get">GET</span> <span class="badge badge-post">POST</span> /capital</h3>
+            <p>Permite consultar y realizar ajustes sobre el capital y fondos de la empresa.</p>
+            <p><strong>Respuesta GET (JSON):</strong></p>
+            <pre><code>{
+  "total_general": 100000,
+  "fondo_nomina": 10000
+}</code></pre>
+        </section>
 
-headers = {"x-api-key": "mi_api_key_segura"}
-r = requests.get("http://127.0.0.1:5000/empleados", headers=headers)
-print(r.json())
-        </pre>
-    </div>
+        <!-- 4. Formato de datos -->
+        <section id="formato">
+            <h2>4. Formato de Datos</h2>
+            <p>Toda comunicación intercambiada con la API debe estructurarse utilizando el formato estándar <strong>JSON</strong>.</p>
+            <ul>
+                <li><strong>Encabezados:</strong> Debe incluir <code>x-api-key</code> para rutas protegidas.</li>
+                <li><strong>Payloads / Body:</strong> Objetos en formato <code>application/json</code>.</li>
+                <li><strong>Respuestas:</strong> Estructuras estandarizadas en formato JSON.</li>
+            </ul>
+        </section>
 
-    <div class="section">
-        <h2>8. Manejo de errores</h2>
-        <p>La API devuelve errores en formato JSON:</p>
-        <pre>
-{
+        <!-- 5. Dirección y acceso -->
+        <section id="flujo">
+            <h2>5. Dirección y Flujo de Datos</h2>
+            <p>El procesamiento de cada solicitud sigue un flujo secuencial a través del stack tecnológico de la aplicación:</p>
+            
+            <div class="flow-container">
+                <span class="flow-step">Cliente</span>
+                <span class="flow-arrow">➔</span>
+                <span class="flow-step">API Flask</span>
+                <span class="flow-arrow">➔</span>
+                <span class="flow-step">MariaDB</span>
+                <span class="flow-arrow">➔</span>
+                <span class="flow-step">Respuesta JSON</span>
+            </div>
+        </section>
+
+        <!-- 6. Diccionario de datos -->
+        <section id="diccionario">
+            <h2>6. Diccionario de Datos</h2>
+            <p>Estructura de campos compartida dentro de los modelos del sistema:</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Tipo</th>
+                            <th>Obligatorio</th>
+                            <th>Descripción</th>
+                            <th>Ejemplo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>Integer</td>
+                            <td>Sí</td>
+                            <td>Identificador único del registro</td>
+                            <td><code>25</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>nombre</code></td>
+                            <td>String</td>
+                            <td>Sí</td>
+                            <td>Nombre completo del empleado</td>
+                            <td><code>"Juan"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>rol</code></td>
+                            <td>String</td>
+                            <td>Sí</td>
+                            <td>Rol asignado para permisos</td>
+                            <td><code>"admin"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>monto</code></td>
+                            <td>Float</td>
+                            <td>No</td>
+                            <td>Salario asignado o monto de ajuste</td>
+                            <td><code>1500.50</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 7. Ejemplos de consumo -->
+        <section id="ejemplos">
+            <h2>7. Ejemplos de Consumo</h2>
+
+            <h3>Postman</h3>
+            <p>Configura la solicitud HTTP en la interfaz:</p>
+            <pre><code>Method: GET
+URL: http://127.0.0.1:5000/empleados
+Headers: 
+  x-api-key: mi_api_key_segura</code></pre>
+
+            <h3>cURL</h3>
+            <pre><code>curl -X GET http://127.0.0.1:5000/empleados \
+  -H "x-api-key: mi_api_key_segura"</code></pre>
+
+            <h3>Python (requests)</h3>
+            <pre><code>import requests
+
+url = "http://127.0.0.1:5000/empleados"
+headers = {
+    "x-api-key": "mi_api_key_segura"
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())</code></pre>
+        </section>
+
+        <!-- 8. Manejo de errores -->
+        <section id="errores">
+            <h2>8. Manejo de Errores</h2>
+            <p>En caso de fallos en la solicitud o ejecución, el servidor retornará un objeto de error estándar con un código de estado HTTP adecuado:</p>
+            
+            <pre><code>{
   "statusCode": 401,
   "message": "API Key inválida"
-}
-        </pre>
-        <ul>
-            <li><strong>401:</strong> Autenticación fallida.</li>
-            <li><strong>404:</strong> Recurso no encontrado.</li>
-            <li><strong>500:</strong> Error interno del servidor.</li>
-        </ul>
-    </div>
+}</code></pre>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Estado</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>401</code></td>
+                            <td>Unauthorized</td>
+                            <td>Autenticación fallida o API Key no proporcionada.</td>
+                        </tr>
+                        <tr>
+                            <td><code>404</code></td>
+                            <td>Not Found</td>
+                            <td>El recurso o endpoint solicitado no existe.</td>
+                        </tr>
+                        <tr>
+                            <td><code>500</code></td>
+                            <td>Internal Server Error</td>
+                            <td>Ocurrió un error no controlado en el servidor.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
 </body>
 </html>
