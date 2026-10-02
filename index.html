@@ -280,13 +280,14 @@
         <nav>
             <ul>
                 <li><a href="#introduccion">1. Introducción</a></li>
-                <li><a href="#autenticacion">2. Acceso y Autenticación</a></li>
-                <li><a href="#endpoints">3. Endpoints</a></li>
-                <li><a href="#formato">4. Formato de Datos</a></li>
-                <li><a href="#flujo">5. Flujo de Datos</a></li>
-                <li><a href="#diccionario">6. Diccionario de Datos</a></li>
-                <li><a href="#ejemplos">7. Ejemplos de Consumo</a></li>
-                <li><a href="#errores">8. Manejo de Errores</a></li>
+                <li><a href="#config-red">2. Configuración en Red Local</a></li>
+                <li><a href="#autenticacion">3. Acceso y Autenticación</a></li>
+                <li><a href="#endpoints">4. Endpoints</a></li>
+                <li><a href="#formato">5. Formato de Datos</a></li>
+                <li><a href="#flujo">6. Flujo de Datos</a></li>
+                <li><a href="#diccionario">7. Diccionario de Datos</a></li>
+                <li><a href="#ejemplos">8. Ejemplos de Consumo</a></li>
+                <li><a href="#errores">9. Manejo de Errores</a></li>
             </ul>
         </nav>
     </aside>
@@ -295,7 +296,7 @@
     <main>
         <header>
             <h1>Documentación Técnica de la API</h1>
-            <p class="subtitle">Especificaciones para la integración con el ecosistema de Pollos Cochabamba</p>
+            <p class="subtitle">Especificaciones para la integración con el ecosistema de Pollos Cochabamba (Entorno Red Local / LAN)</p>
         </header>
 
         <!-- 1. Introducción -->
@@ -327,19 +328,31 @@
             </ul>
         </section>
 
-        <!-- 2. Acceso y autenticación -->
+        <!-- 2. Configuración en Red Local -->
+        <section id="config-red">
+            <h2>2. Configuración para Pruebas en Red Local (LAN)</h2>
+            <p>Para permitir que otros dispositivos dentro de la misma red local puedan consumir la API, el servidor Flask debe ejecutarse vinculándose a la IP universal <code>0.0.0.0</code>:</p>
+            
+            <pre><code># En el archivo principal de Flask (app.py)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)</code></pre>
+
+            <p><strong>Dirección IP del Servidor en LAN (Ejemplo):</strong> <code>http://192.168.1.100:5000</code> <em>(Reemplazar 192.168.1.100 por la dirección IP asignada a su servidor mediante <code>ipconfig</code> o <code>ifconfig</code>)</em>.</p>
+        </section>
+
+        <!-- 3. Acceso y autenticación -->
         <section id="autenticacion">
-            <h2>2. Acceso y Autenticación</h2>
+            <h2>3. Acceso y Autenticación</h2>
             <p>La API implementa seguridad mediante autenticación basada en clave de API (<strong>API Key</strong>). Esta clave debe incluirse en los encabezados HTTP de cada solicitud en el parámetro <code>x-api-key</code>.</p>
 
             <pre><code>GET /empleados HTTP/1.1
-Host: 127.0.0.1:5000
+Host: 192.168.1.100:5000
 x-api-key: mi_api_key_segura</code></pre>
         </section>
 
-        <!-- 3. Rutas o Endpoints -->
+        <!-- 4. Rutas o Endpoints -->
         <section id="endpoints">
-            <h2>3. Rutas o Endpoints</h2>
+            <h2>4. Rutas o Endpoints</h2>
 
             <h3><span class="badge badge-post">POST</span> /login</h3>
             <p>Inicia sesión en la plataforma validando credenciales.</p>
@@ -383,9 +396,9 @@ x-api-key: mi_api_key_segura</code></pre>
 }</code></pre>
         </section>
 
-        <!-- 4. Formato de datos -->
+        <!-- 5. Formato de datos -->
         <section id="formato">
-            <h2>4. Formato de Datos</h2>
+            <h2>5. Formato de Datos</h2>
             <p>Toda comunicación intercambiada con la API debe estructurarse utilizando el formato estándar <strong>JSON</strong>.</p>
             <ul>
                 <li><strong>Encabezados:</strong> Debe incluir <code>x-api-key</code> para rutas protegidas.</li>
@@ -394,15 +407,15 @@ x-api-key: mi_api_key_segura</code></pre>
             </ul>
         </section>
 
-        <!-- 5. Dirección y acceso -->
+        <!-- 6. Dirección y acceso -->
         <section id="flujo">
-            <h2>5. Dirección y Flujo de Datos</h2>
+            <h2>6. Dirección y Flujo de Datos</h2>
             <p>El procesamiento de cada solicitud sigue un flujo secuencial a través del stack tecnológico de la aplicación:</p>
             
             <div class="flow-container">
-                <span class="flow-step">Cliente</span>
+                <span class="flow-step">Cliente (LAN)</span>
                 <span class="flow-arrow">➔</span>
-                <span class="flow-step">API Flask</span>
+                <span class="flow-step">API Flask (192.168.1.100:5000)</span>
                 <span class="flow-arrow">➔</span>
                 <span class="flow-step">MariaDB</span>
                 <span class="flow-arrow">➔</span>
@@ -410,9 +423,9 @@ x-api-key: mi_api_key_segura</code></pre>
             </div>
         </section>
 
-        <!-- 6. Diccionario de datos -->
+        <!-- 7. Diccionario de datos -->
         <section id="diccionario">
-            <h2>6. Diccionario de Datos</h2>
+            <h2>7. Diccionario de Datos</h2>
             <p>Estructura de campos compartida dentro de los modelos del sistema:</p>
 
             <div class="table-container">
@@ -460,25 +473,26 @@ x-api-key: mi_api_key_segura</code></pre>
             </div>
         </section>
 
-        <!-- 7. Ejemplos de consumo -->
+        <!-- 8. Ejemplos de consumo -->
         <section id="ejemplos">
-            <h2>7. Ejemplos de Consumo</h2>
+            <h2>8. Ejemplos de Consumo en Red Local</h2>
 
             <h3>Postman</h3>
-            <p>Configura la solicitud HTTP en la interfaz:</p>
+            <p>Configura la solicitud HTTP en la interfaz usando la IP local de tu servidor:</p>
             <pre><code>Method: GET
-URL: http://127.0.0.1:5000/empleados
+URL: http://192.168.1.100:5000/empleados
 Headers: 
   x-api-key: mi_api_key_segura</code></pre>
 
             <h3>cURL</h3>
-            <pre><code>curl -X GET http://127.0.0.1:5000/empleados \
+            <pre><code>curl -X GET http://192.168.1.100:5000/empleados \
   -H "x-api-key: mi_api_key_segura"</code></pre>
 
             <h3>Python (requests)</h3>
             <pre><code>import requests
 
-url = "http://127.0.0.1:5000/empleados"
+# Reemplazar 192.168.1.100 por la IP local de la máquina servidor
+url = "http://192.168.1.100:5000/empleados"
 headers = {
     "x-api-key": "mi_api_key_segura"
 }
@@ -487,9 +501,9 @@ response = requests.get(url, headers=headers)
 print(response.json())</code></pre>
         </section>
 
-        <!-- 8. Manejo de errores -->
+        <!-- 9. Manejo de errores -->
         <section id="errores">
-            <h2>8. Manejo de Errores</h2>
+            <h2>9. Manejo de Errores</h2>
             <p>En caso de fallos en la solicitud o ejecución, el servidor retornará un objeto de error estándar con un código de estado HTTP adecuado:</p>
             
             <pre><code>{
