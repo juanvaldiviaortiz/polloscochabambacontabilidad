@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentación Técnica API - Pollos Cochabamba</title>
+    <title>Documentación Técnica API - Departamento de Contabilidad</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -48,7 +48,7 @@
         }
 
         .brand {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: var(--accent);
             margin-bottom: 2rem;
@@ -250,13 +250,15 @@
             border-radius: 8px;
             border: 1px solid var(--border);
             font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin: 1rem 0;
+            overflow-x: auto;
         }
 
         .flow-step {
             color: var(--accent);
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .flow-arrow {
@@ -275,14 +277,14 @@
     <!-- Navegación Lateral -->
     <aside>
         <div class="brand">
-            <span>🍗</span> Pollos Cochabamba
+            <span>💼</span> API de Contabilidad v1.2.0
         </div>
         <nav>
             <ul>
                 <li><a href="#introduccion">1. Introducción</a></li>
-                <li><a href="#config-red">2. Configuración en Red Local</a></li>
-                <li><a href="#autenticacion">3. Acceso y Autenticación</a></li>
-                <li><a href="#endpoints">4. Endpoints</a></li>
+                <li><a href="#config-red">2. Despliegue e Integración LAN</a></li>
+                <li><a href="#autenticacion">3. Arquitectura y CORS</a></li>
+                <li><a href="#endpoints">4. Endpoints de la API</a></li>
                 <li><a href="#formato">5. Formato de Datos</a></li>
                 <li><a href="#flujo">6. Flujo de Datos</a></li>
                 <li><a href="#diccionario">7. Diccionario de Datos</a></li>
@@ -296,178 +298,229 @@
     <main>
         <header>
             <h1>Documentación Técnica de la API</h1>
-            <p class="subtitle">Especificaciones para la integración con el ecosistema de Pollos Cochabamba (Entorno Red Local / LAN)</p>
+            <p class="subtitle">Especificaciones para la integración interdepartamental del Departamento de Contabilidad</p>
         </header>
 
         <!-- 1. Introducción -->
         <section id="introduccion">
             <h2>1. Introducción</h2>
-            <p>La <strong>Pollos Cochabamba API</strong> es un sistema desarrollado en <code>Flask</code> sobre una base de datos <code>MariaDB</code>, diseñado para gestionar los recursos humanos, de marketing y movimientos financieros de la empresa.</p>
+            <p>La <strong>API de Integración de Contabilidad</strong> es un servicio REST desarrollado en <code>FastAPI</code> sobre una base de datos <code>SQLite</code> con soporte de claves foráneas. Funciona como nodo centralizador de información financiera, consolidando ventas, comisiones de personal, gastos de campañas de marketing y compras de insumos.</p>
 
             <div class="info-grid">
                 <div class="card">
-                    <h4>Servidor Backend</h4>
-                    <p>Flask (Python)</p>
+                    <h4>Backend Engine</h4>
+                    <p>FastAPI / Uvicorn</p>
                 </div>
                 <div class="card">
                     <h4>Base de Datos</h4>
-                    <p>MariaDB</p>
+                    <p>SQLite3 (PRAGMA FK=ON)</p>
                 </div>
                 <div class="card">
-                    <h4>Formato</h4>
-                    <p>JSON REST API</p>
+                    <h4>Interfaz Web</h4>
+                    <p>Streamlit Dashboard</p>
+                </div>
+                <div class="card">
+                    <h4>Versión API</h4>
+                    <p>v1.2.0</p>
                 </div>
             </div>
 
-            <p><strong>Funcionalidades principales:</strong></p>
+            <p><strong>Módulos e Integraciones Clave:</strong></p>
             <ul>
-                <li>Registro e inicio de sesión de usuarios.</li>
-                <li>Gestión de empleados.</li>
-                <li>Gestión de capital y presupuestos de marketing.</li>
-                <li>Control y auditoría de movimientos financieros.</li>
+                <li><strong>Gestión de Personal y Nómina:</strong> Registro de empleados, cargos por categoría e integración automática de comisiones en la nómina.</li>
+                <li><strong>Marketing:</strong> Registro e historial centralizado de inversiones y gastos publicitaritarios por campaña.</li>
+                <li><strong>Compras e Insumos:</strong> Registro de adquisiciones con desglose de impuestos (IVA) interconectado con servicios externos de proveedores y productos.</li>
+                <li><strong>Ventas Integradas:</strong> Consolidación de ingresos originados en sistemas de venta externos.</li>
             </ul>
         </section>
 
         <!-- 2. Configuración en Red Local -->
         <section id="config-red">
-            <h2>2. Configuración para Pruebas en Red Local (LAN)</h2>
-            <p>Para permitir que otros dispositivos dentro de la misma red local puedan consumir la API, el servidor Flask debe ejecutarse vinculándose a la IP universal <code>0.0.0.0</code>:</p>
+            <h2>2. Configuración para Pruebas e Integración en Red Local (LAN)</h2>
+            <p>Para permitir que el panel en Streamlit o aplicaciones externas dentro de la red local puedan interactuar con la API, el servidor Uvicorn se ejecuta escuchando en la interfaz <code>0.0.0.0</code> en el puerto <code>8000</code>:</p>
             
-            <pre><code># En el archivo principal de Flask (app.py)
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)</code></pre>
+            <pre><code># Comando para iniciar el backend desde la terminal
+python api.py
+# O ejecutable directamente mediante Uvicorn:
+uvicorn api:app --host 0.0.0.0 --port 8000 --reload</code></pre>
 
-            <p><strong>Dirección IP del Servidor en LAN (Ejemplo):</strong> <code>http://192.168.1.100:5000</code> <em>(Reemplazar 192.168.1.100 por la dirección IP asignada a su servidor mediante <code>ipconfig</code> o <code>ifconfig</code>)</em>.</p>
+            <p><strong>Variables de Entorno Configurables:</strong></p>
+            <ul>
+                <li><code>DB_PATH</code>: Ruta del archivo SQLite (Valor por defecto: <code>contabilidad.db</code>).</li>
+                <li><code>API_URL</code> (en Frontend Streamlit): URL base para consumir el backend (Ejemplo: <code>http://localhost:8000/api/v1</code> o <code>http://192.168.X.X:8000/api/v1</code>).</li>
+            </ul>
         </section>
 
-        <!-- 3. Acceso y autenticación -->
+        <!-- 3. Arquitectura y CORS -->
         <section id="autenticacion">
-            <h2>3. Acceso y Autenticación</h2>
-            <p>La API implementa seguridad mediante autenticación basada en clave de API (<strong>API Key</strong>). Esta clave debe incluirse en los encabezados HTTP de cada solicitud en el parámetro <code>x-api-key</code>.</p>
-
-            <pre><code>GET /empleados HTTP/1.1
-Host: 192.168.1.100:5000
-x-api-key: mi_api_key_segura</code></pre>
+            <h2>3. Arquitectura y CORS</h2>
+            <p>La API dispone de middleware CORS (Cross-Origin Resource Sharing) habilitado totalmente (<code>allow_origins=["*"]</code>), permitiendo solicitudes desde cualquier cliente web o tablero de control en la red.</p>
+            <p>Adicionalmente, el frontend en Streamlit se conecta con un microservicio de catálogo externo para obtener la lista de proveedores y productos:</p>
+            <pre><code>Servidor Externo de Inventario/Proveedores: http://192.168.68.157:5000/api/v1</code></pre>
         </section>
 
-        <!-- 4. Rutas o Endpoints -->
+        <!-- 4. Endpoints -->
         <section id="endpoints">
-            <h2>4. Rutas o Endpoints</h2>
+            <h2>4. Endpoints de la API (/api/v1)</h2>
 
-            <h3><span class="badge badge-post">POST</span> /login</h3>
-            <p>Inicia sesión en la plataforma validando credenciales.</p>
+            <h3><span class="badge badge-get">GET</span> /</h3>
+            <p>Verifica el estado del servicio de contabilidad.</p>
+            <p><strong>Respuesta de éxito (200 OK):</strong></p>
+            <pre><code>{
+  "mensaje": "API de Contabilidad activa y lista para recibir integraciones."
+}</code></pre>
+
+            <h3><span class="badge badge-get">GET</span> /api/v1/categorias</h3>
+            <p>Obtiene el catálogo de categorías / cargos de empleados disponibles.</p>
+            <p><strong>Respuesta de éxito (200 OK):</strong></p>
+            <pre><code>{
+  "1": "Vendedor Senior",
+  "2": "Ejecutivo de Ventas",
+  "3": "Analista de Marketing",
+  "4": "Contador"
+}</code></pre>
+
+            <h3><span class="badge badge-get">GET</span> /api/v1/empleados</h3>
+            <p>Retorna la lista detallada de empleados junto con su categoría y horarios.</p>
+
+            <h3><span class="badge badge-post">POST</span> /api/v1/empleados</h3>
+            <p>Registra un nuevo empleado en la base de datos de contabilidad.</p>
             <p><strong>Body (JSON):</strong></p>
             <pre><code>{
-  "email": "user@mail.com",
-  "password": "1234"
-}</code></pre>
-            <p><strong>Respuesta:</strong></p>
-            <pre><code>{
-  "message": "Login exitoso"
+  "nombre": "Carlos",
+  "apellido": "Mendoza",
+  "edad": 30,
+  "categoria_id": 1,
+  "turno": "Mañana",
+  "horario_inicio": "08:00",
+  "horario_fin": "16:00",
+  "salario_base": 3500.0,
+  "departamento_origen": "Ventas"
 }</code></pre>
 
-            <h3><span class="badge badge-post">POST</span> /registro</h3>
-            <p>Registra un nuevo usuario en la plataforma con un rol asignado.</p>
+            <h3><span class="badge badge-post">POST</span> /api/v1/ventas/comisiones</h3>
+            <p>Registra la comisión de un empleado y liquida la nómina acumulando el salario base registrado.</p>
             <p><strong>Body (JSON):</strong></p>
             <pre><code>{
-  "nombre": "Juan",
-  "email": "juan@mail.com",
-  "password": "1234",
-  "rol": "admin"
+  "empleado_id": 1,
+  "periodo": "2026-10",
+  "monto_comision": 450.00
 }</code></pre>
 
-            <h3><span class="badge badge-get">GET</span> <span class="badge badge-post">POST</span> /empleados</h3>
-            <p>Permite listar o registrar la lista de empleados. Requiere encabezado de autenticación.</p>
-            <p><strong>Headers:</strong> <code>x-api-key: mi_api_key_segura</code></p>
-            <p><strong>Respuesta GET (JSON):</strong></p>
-            <pre><code>[
-  {
-    "id": 1,
-    "nombre": "Pedro"
-  }
-]</code></pre>
-
-            <h3><span class="badge badge-get">GET</span> <span class="badge badge-post">POST</span> /capital</h3>
-            <p>Permite consultar y realizar ajustes sobre el capital y fondos de la empresa.</p>
-            <p><strong>Respuesta GET (JSON):</strong></p>
+            <h3><span class="badge badge-get">GET</span> <span class="badge badge-post">POST</span> /api/v1/marketing/gastos</h3>
+            <p>Consulta o registra gastos asignados a campañas publicitarias.</p>
+            <p><strong>Body POST (JSON):</strong></p>
             <pre><code>{
-  "total_general": 100000,
-  "fondo_nomina": 10000
+  "campaña": "Campaña Redes Q4",
+  "proveedor_o_afiliado": "Meta Ads",
+  "monto_gasto": 250.00,
+  "fecha": "2026-10-09"
+}</code></pre>
+
+            <h3><span class="badge badge-get">GET</span> <span class="badge badge-post">POST</span> /api/v1/compras/insumos</h3>
+            <p>Consulta o registra la adquisición de insumos con cálculo de impuestos.</p>
+            <p><strong>Body POST (JSON):</strong></p>
+            <pre><code>{
+  "proveedor_id": 1,
+  "producto_id": 101,
+  "cantidad": 10,
+  "precio_unitario": 50.0,
+  "total": 500.0,
+  "monto_impuesto": 65.0,
+  "total_a_pagar": 565.0,
+  "fecha": "2026-10-09"
 }</code></pre>
         </section>
 
         <!-- 5. Formato de datos -->
         <section id="formato">
             <h2>5. Formato de Datos</h2>
-            <p>Toda comunicación intercambiada con la API debe estructurarse utilizando el formato estándar <strong>JSON</strong>.</p>
-            <ul>
-                <li><strong>Encabezados:</strong> Debe incluir <code>x-api-key</code> para rutas protegidas.</li>
-                <li><strong>Payloads / Body:</strong> Objetos en formato <code>application/json</code>.</li>
-                <li><strong>Respuestas:</strong> Estructuras estandarizadas en formato JSON.</li>
-            </ul>
+            <p>Toda comunicación intercambiada con la API se realiza en formato estándar <strong>JSON</strong> (<code>Content-Type: application/json</code>). Pydantic valida automáticamente los tipos y rangos de datos de entrada.</p>
         </section>
 
-        <!-- 6. Dirección y acceso -->
+        <!-- 6. Flujo de datos -->
         <section id="flujo">
             <h2>6. Dirección y Flujo de Datos</h2>
-            <p>El procesamiento de cada solicitud sigue un flujo secuencial a través del stack tecnológico de la aplicación:</p>
+            <p>Esquema de integración entre los módulos de negocio y el almacenamiento de contabilidad:</p>
             
             <div class="flow-container">
-                <span class="flow-step">Cliente (LAN)</span>
+                <span class="flow-step">Frontend Streamlit / API Externa</span>
                 <span class="flow-arrow">➔</span>
-                <span class="flow-step">API Flask (192.168.1.100:5000)</span>
+                <span class="flow-step">FastAPI REST Controller</span>
                 <span class="flow-arrow">➔</span>
-                <span class="flow-step">MariaDB</span>
+                <span class="flow-step">Modelos Pydantic</span>
                 <span class="flow-arrow">➔</span>
-                <span class="flow-step">Respuesta JSON</span>
+                <span class="flow-step">SQLite (contabilidad.db)</span>
             </div>
         </section>
 
         <!-- 7. Diccionario de datos -->
         <section id="diccionario">
-            <h2>7. Diccionario de Datos</h2>
-            <p>Estructura de campos compartida dentro de los modelos del sistema:</p>
+            <h2>7. Diccionario de Datos (Modelos y Tablas)</h2>
+            <p>Estructura de las tablas principales en SQLite:</p>
 
+            <h3>Tabla: <code>empleados</code></h3>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Campo</th>
-                            <th>Tipo</th>
-                            <th>Obligatorio</th>
+                            <th>Tipo DB</th>
+                            <th>Validación / Regla</th>
                             <th>Descripción</th>
-                            <th>Ejemplo</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <tr><td><code>id</code></td><td>INTEGER</td><td>PRIMARY KEY AUTOINCREMENT</td><td>Identificador único del empleado</td></tr>
+                        <tr><td><code>nombre</code></td><td>TEXT</td><td>NOT NULL</td><td>Nombre(s) del empleado</td></tr>
+                        <tr><td><code>apellido</code></td><td>TEXT</td><td>NOT NULL</td><td>Apellido(s) del empleado</td></tr>
+                        <tr><td><code>edad</code></td><td>INTEGER</td><td>CHECK(edad &gt;= 18 AND edad &lt;= 80)</td><td>Edad laboral del empleado</td></tr>
+                        <tr><td><code>categoria_id</code></td><td>INTEGER</td><td>FOREIGN KEY -&gt; categorias_empleado(id)</td><td>Rol o cargo del empleado</td></tr>
+                        <tr><td><code>salario_base</code></td><td>REAL</td><td>NOT NULL, &gt;= 0</td><td>Sueldo base contratado</td></tr>
+                        <tr><td><code>departamento_origen</code></td><td>TEXT</td><td>NOT NULL</td><td>Área (Ventas, Marketing, Contabilidad)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Tabla: <code>pagos_nomina</code></h3>
+            <div class="table-container">
+                <table>
+                    <thead>
                         <tr>
-                            <td><code>id</code></td>
-                            <td>Integer</td>
-                            <td>Sí</td>
-                            <td>Identificador único del registro</td>
-                            <td><code>25</code></td>
+                            <th>Campo</th>
+                            <th>Tipo DB</th>
+                            <th>Descripción</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>id</code></td><td>INTEGER</td><td>Identificador del pago de nómina</td></tr>
+                        <tr><td><code>empleado_id</code></td><td>INTEGER</td><td>ID del empleado asociado</td></tr>
+                        <tr><td><code>salario_base</code></td><td>REAL</td><td>Salario registrado al momento del pago</td></tr>
+                        <tr><td><code>monto_comisiones</code></td><td>REAL</td><td>Monto adicional acumulado por comisiones</td></tr>
+                        <tr><td><code>monto_total</code></td><td>REAL</td><td>Suma total a liquidar (Base + Comisiones)</td></tr>
+                        <tr><td><code>fecha_pago</code></td><td>TEXT</td><td>Fecha de emisión del pago</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Tabla: <code>compras_insumos</code></h3>
+            <div class="table-container">
+                <table>
+                    <thead>
                         <tr>
-                            <td><code>nombre</code></td>
-                            <td>String</td>
-                            <td>Sí</td>
-                            <td>Nombre completo del empleado</td>
-                            <td><code>"Juan"</code></td>
+                            <th>Campo</th>
+                            <th>Tipo DB</th>
+                            <th>Descripción</th>
                         </tr>
-                        <tr>
-                            <td><code>rol</code></td>
-                            <td>String</td>
-                            <td>Sí</td>
-                            <td>Rol asignado para permisos</td>
-                            <td><code>"admin"</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>monto</code></td>
-                            <td>Float</td>
-                            <td>No</td>
-                            <td>Salario asignado o monto de ajuste</td>
-                            <td><code>1500.50</code></td>
-                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>proveedor_id</code></td><td>INTEGER</td><td>ID del proveedor (Obtenido de API externa)</td></tr>
+                        <tr><td><code>producto_id</code></td><td>INTEGER</td><td>ID del insumo/producto (API externa)</td></tr>
+                        <tr><td><code>cantidad</code></td><td>INTEGER</td><td>Cantidad comprada (&gt; 0)</td></tr>
+                        <tr><td><code>precio_unitario</code></td><td>REAL</td><td>Precio por unidad (&gt; 0)</td></tr>
+                        <tr><td><code>total</code></td><td>REAL</td><td>Subtotal bruto</td></tr>
+                        <tr><td><code>monto_impuesto</code></td><td>REAL</td><td>Monto correspondiente a impuestos (ej. IVA 13%)</td></tr>
+                        <tr><td><code>total_a_pagar</code></td><td>REAL</td><td>Monto total con impuestos calculados</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -475,40 +528,49 @@ x-api-key: mi_api_key_segura</code></pre>
 
         <!-- 8. Ejemplos de consumo -->
         <section id="ejemplos">
-            <h2>8. Ejemplos de Consumo en Red Local</h2>
+            <h2>8. Ejemplos de Consumo</h2>
 
-            <h3>Postman</h3>
-            <p>Configura la solicitud HTTP en la interfaz usando la IP local de tu servidor:</p>
-            <pre><code>Method: GET
-URL: http://192.168.1.100:5000/empleados
-Headers: 
-  x-api-key: mi_api_key_segura</code></pre>
-
-            <h3>cURL</h3>
-            <pre><code>curl -X GET http://192.168.1.100:5000/empleados \
-  -H "x-api-key: mi_api_key_segura"</code></pre>
-
-            <h3>Python (requests)</h3>
+            <h3>Python (requests) - Registrar Compra de Insumos</h3>
             <pre><code>import requests
 
-# Reemplazar 192.168.1.100 por la IP local de la máquina servidor
-url = "http://192.168.1.100:5000/empleados"
-headers = {
-    "x-api-key": "mi_api_key_segura"
+url = "http://localhost:8000/api/v1/compras/insumos"
+payload = {
+    "proveedor_id": 2,
+    "producto_id": 105,
+    "cantidad": 50,
+    "precio_unitario": 12.5,
+    "total": 625.0,
+    "monto_impuesto": 81.25,
+    "total_a_pagar": 706.25,
+    "fecha": "2026-10-09"
 }
 
-response = requests.get(url, headers=headers)
+response = requests.post(url, json=payload)
 print(response.json())</code></pre>
+
+            <h3>cURL - Consultar Empleados</h3>
+            <pre><code>curl -X GET http://localhost:8000/api/v1/empleados</code></pre>
         </section>
 
         <!-- 9. Manejo de errores -->
         <section id="errores">
             <h2>9. Manejo de Errores</h2>
-            <p>En caso de fallos en la solicitud o ejecución, el servidor retornará un objeto de error estándar con un código de estado HTTP adecuado:</p>
+            <p>FastAPI responde automáticamente con estructuras estandarizadas al encontrar errores de validación de modelos o recursos inexistentes:</p>
             
-            <pre><code>{
-  "statusCode": 401,
-  "message": "API Key inválida"
+            <pre><code>// Ejemplo de error 404 (Empleado no encontrado)
+{
+  "detail": "Empleado con ID 99 no existe."
+}
+
+// Ejemplo de error 422 (Unprocessable Entity - Fallo de Validación Pydantic)
+{
+  "detail": [
+    {
+      "loc": ["body", "edad"],
+      "msg": "ensure this value is greater than or equal to 18",
+      "type": "value_error.number.not_ge"
+    }
+  ]
 }</code></pre>
 
             <div class="table-container">
@@ -522,19 +584,24 @@ print(response.json())</code></pre>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>401</code></td>
-                            <td>Unauthorized</td>
-                            <td>Autenticación fallida o API Key no proporcionada.</td>
+                            <td><code>200 / 201</code></td>
+                            <td>OK / Created</td>
+                            <td>Solicitud procesada o recurso creado correctamente.</td>
                         </tr>
                         <tr>
                             <td><code>404</code></td>
                             <td>Not Found</td>
-                            <td>El recurso o endpoint solicitado no existe.</td>
+                            <td>El empleado o recurso solicitado no existe en la base de datos.</td>
+                        </tr>
+                        <tr>
+                            <td><code>422</code></td>
+                            <td>Unprocessable Entity</td>
+                            <td>El cuerpo de la solicitud no cumple con los tipos o validaciones requeridas por Pydantic.</td>
                         </tr>
                         <tr>
                             <td><code>500</code></td>
                             <td>Internal Server Error</td>
-                            <td>Ocurrió un error no controlado en el servidor.</td>
+                            <td>Excepción no controlada en la base de datos o servidor backend.</td>
                         </tr>
                     </tbody>
                 </table>
